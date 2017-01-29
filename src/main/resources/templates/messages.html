@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Messageboard</title>
+    </head>
+    <body>
+
+        <h1>Leave a message!</h1>
+
+        <div th:if="${messages != null}">
+            <div th:each="message: ${messages}">
+                <p>Sent by: <span th:utext="${message.sender}">Nickname</span></p>
+                <p><span th:utext="${message.content}">Content</span></p>
+            </div>
+        </div>
+        
+        <form action="#" th:action="@{/messages}" method="POST">
+            <textarea name="message" rows="10" cols="30"/>
+            <input type="submit" value="Send!"/>
+        </form>
+
+        <p></p>
+    </body>
+</html>
