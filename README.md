@@ -14,8 +14,9 @@ These aren't linked anywhere, sorry
 - Signup: /signup
 
 ## Flaws:
+Flaws are numbered according to the [OWASP top 10 list](https://www.owasp.org/index.php/Top_10_2013-Top_10)
 
-### XSS and broken session management (OWASP A2 and A3)
+### XSS and broken session management (A2 and A3)
 1 - Go to localhost:8080/register
 
 2 - Log in with user "ted" and password "nosecurity"
@@ -63,7 +64,10 @@ All secrets can be accessed by anyone with direct links.
 ##### Fix
 The SecretController should check the identity of the viewer before showing the secret.
 
-### Security misconfiguration and Sensitive data exposure (A5 and A6)
+### Security misconfiguration, Sensitive data exposure and CSRF protection (A5, A6 and A8)
+
+* Data is saved in an insecure manner. Secrets and passwords should be saved in encrypted format.
+* CSRF protection is missing.
 
 View SecurityConfiguration.java at sec.project.config
 
@@ -72,14 +76,19 @@ View SecurityConfiguration.java at sec.project.config
         return NoOpPasswordEncoder.getInstance();
     }
 
-Passwords are saved in plaintext. This is stupid and easy to fix by using BCrypt password encoder instead of nothing.
+Passwords are saved in plaintext. This is stupid and easy to fix by using BCrypt password encoder instead:
 
-CSRF protection is also disabled. It can be fixed by removing the line
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+CSRF protection can be enabled by removing the line
 
     http.csrf().disable();
 
 ### Missing function level access control (A7)
-The application doesn't have any access control for deleting secret notes. Anyone can view and delete any secret message. This could be fixed by checking the identity when deleting or showing secrets.
+The application doesn't have any access control for viewing and deleting secret notes.
 
 No access control here: (SecretController.java)
 
@@ -96,6 +105,9 @@ No access control here: (SecretController.java)
         return "redirect:/secrets";
       }
 
+This could be fixed by checking that the request to view or delete is coming either from the owner or an admin when deleting or showing secrets.
+
 ### Others
 
-* Usernames are not checked to be unique. Creating a new account with an existing username is allowed but makes it impossible to log in with either account. This makes the older account lose access to important data
+* Usernames are not checked to be unique. Creating a new account with an existing username is allowed but makes it impossible to log in with either account. This makes the older account lose access to important data.
+  * Fixed by adding the @Unique-annotation to username in Account.java

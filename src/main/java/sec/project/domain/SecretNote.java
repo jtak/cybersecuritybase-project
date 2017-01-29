@@ -42,6 +42,12 @@ public class SecretNote extends AbstractPersistable<Long>{
         this.title = title;
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
+    
+    
     @Override
     public String toString() {
         return this.getId() + "\n" + this.owner + "\n" + this.title + "\n" + this.content; //To change body of generated methods, choose Tools | Templates.
